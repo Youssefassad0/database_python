@@ -1,13 +1,14 @@
-# Main application
 import customtkinter as ctk
 from chat import DatabaseManagement
-
+from delete_db import DeleteDB
 # Configure appearance and theme
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("dark-blue")
+
 # Set the window size
 window_width = 500
 window_height = 300
+
 # Initialize the app
 app = ctk.CTk()
 
@@ -16,8 +17,8 @@ screen_width = app.winfo_screenwidth()
 screen_height = app.winfo_screenheight()
 
 # Calculate the position coordinates to center the window
-position_x = (screen_width // 2) - (window_width // 2)
-position_y = (screen_height // 2) - (window_height // 2)
+position_x = (screen_width - window_width) // 2
+position_y = (screen_height - window_height) // 2
 
 # Set the geometry of the window with the position
 app.geometry(f"{window_width}x{window_height}+{position_x}+{position_y}")
@@ -36,15 +37,16 @@ def show_frame(frame):
 # Create frames
 main_menu_frame = ctk.CTkFrame(app, fg_color="#2b2b2b")  # Dark gray background
 database_management_frame = DatabaseManagement(app, show_frame, main_menu_frame).frame
-
+table_management_frame=DeleteDB(app, show_frame, main_menu_frame).frame
 # Ensure frames fill the window
 main_menu_frame.grid(row=0, column=0, sticky="nsew")
 database_management_frame.grid(row=0, column=0, sticky="nsew")
+table_management_frame.grid(row=0, column=0, sticky="nsew")
 
 # Main Menu Frame with Buttons
 button_fleet_management = ctk.CTkButton(
     main_menu_frame,
-    text="database Management",
+    text="Database Management",
     command=lambda: show_frame(database_management_frame),
     fg_color="#1f6aa5",
     hover_color="#144d78",
@@ -53,8 +55,8 @@ button_fleet_management.grid(row=0, column=0, padx=10, pady=30)
 
 button_rent_a_car = ctk.CTkButton(
     main_menu_frame,
-    text="Rent a Car",
-    command=lambda: print("Rent a Car button clicked"),
+    text="MODIFY DATABASE",
+    command=lambda: print("Delete a Database button clicked"),
     fg_color="#1f6aa5",
     hover_color="#144d78",
 )
@@ -62,8 +64,8 @@ button_rent_a_car.grid(row=0, column=1, padx=10, pady=10)
 
 button_system_manager = ctk.CTkButton(
     main_menu_frame,
-    text="System Manager",
-    command=lambda: print("System Manager button clicked"),
+    text="Delete DATABASE",
+    command=lambda: show_frame(table_management_frame),
     fg_color="#1f6aa5",
     hover_color="#144d78",
 )
@@ -98,8 +100,6 @@ button_exit.grid(row=1, column=2, padx=10, pady=10)
 
 # Start by showing the main menu frame
 show_frame(main_menu_frame)
-info_label=ctk.CTkLabel(app,text="turtul")
-
 
 # Start the app
 app.mainloop()

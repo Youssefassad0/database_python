@@ -1,5 +1,7 @@
 import pyodbc
 import customtkinter as ctk
+import tkinter
+from table import open_table_creation_window  # Import the function from table.py
 
 class DatabaseManagement:
     def __init__(self, root, show_frame, main_menu_frame):
@@ -43,8 +45,9 @@ class DatabaseManagement:
             self.info_label.configure(text="Please enter a database name", text_color="red")
             return
 
+        database_name = self.entry_database.get()
+        connection = None
         try:
-            database_name = self.entry_database.get()
             connection = pyodbc.connect(
                 'DRIVER={SQL Server};'
                 'Server=localhost;'
@@ -52,7 +55,8 @@ class DatabaseManagement:
                 'Trusted_Connection=True;'
             )
             connection.autocommit = True
-            connection.execute(f'CREATE DATABASE {database_name}')
+            cursor = connection.cursor()
+            cursor.execute(f'CREATE DATABASE {database_name}')
             self.info_label.configure(text="Database created", text_color="green")
 
         except pyodbc.Error as ex:
@@ -60,19 +64,18 @@ class DatabaseManagement:
             self.info_label.configure(text="Creation Failed", text_color="red")
 
         finally:
-            try:
+            if connection:
                 connection.close()
                 print("Connection closed")
-            except NameError:
-                pass
 
     def connect_db(self):
         if not self.validate_entry():
             self.info_label.configure(text="Please enter a database name", text_color="red")
             return
 
+        database_name = self.entry_database.get()
+        connection = None
         try:
-            database_name = self.entry_database.get()
             connection = pyodbc.connect(
                 'DRIVER={SQL Server};'
                 'Server=localhost;'
@@ -81,15 +84,14 @@ class DatabaseManagement:
             )
             self.info_label.configure(text="Connection successful", text_color="green")
 
+            # Open the table creation window
+            open_table_creation_window(connection)
+
         except pyodbc.Error as ex:
             print('Connection failed:', ex)
             self.info_label.configure(text="Connection Failed", text_color="red")
 
         finally:
-            try:
+            if connection:
                 connection.close()
                 print("Connection closed")
-            except NameError:
-                pass
-            
-            
