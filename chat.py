@@ -1,92 +1,84 @@
 import pyodbc
-import customtkinter
+import customtkinter as ctk
 
-# Configure appearance and theme
-customtkinter.set_appearance_mode("light")
-customtkinter.set_default_color_theme("green")
+class DatabaseManagement:
+    def __init__(self, root):
+        self.frame = ctk.CTkFrame(root)
+        
+        # Create and pack the database entry
+        self.entry_database = ctk.CTkEntry(self.frame, placeholder_text="Enter database name")
+        self.entry_database.pack(pady=20, padx=20)
+        
+        # Create a label for displaying connection status
+        self.info_label = ctk.CTkLabel(self.frame, text="", text_color="black")
+        self.info_label.place(relx=0.1, rely=0.9)  # Adjusted the position
+        
+        # Buttons
+        self.create_button = ctk.CTkButton(self.frame, text="Create Database", command=self.create_db, fg_color="black")
+        self.create_button.pack(pady=10)
+        
+        self.connect_button = ctk.CTkButton(self.frame, text="Connect to Database", command=self.connect_db, fg_color="green")
+        self.connect_button.pack(pady=10)
 
-# Initialize the app
-app = customtkinter.CTk()
-app.geometry("300x300")
-app.title("Database Manager")
+        # Back Button to return to the main menu
+        self.back_button = ctk.CTkButton(self.frame, text="Back to Menu", command=lambda: self.frame.tkraise())
+        self.back_button.pack(pady=10)
 
-# Create and pack the database entry
-entry_database = customtkinter.CTkEntry(app, placeholder_text="Enter database name")
-entry_database.pack(pady=20, padx=20)
+    def validate_entry(self):
+        return self.entry_database.get().strip() != ""
 
-# Create a label for displaying connection status
-info_label = customtkinter.CTkLabel(app, text="", text_color="black")
-info_label.place(relx=0.1, rely=0.9)  # Adjusted the position
-
-def validate_entry():
-    """Check if the database name entry is empty."""
-    return entry_database.get().strip() != ""
-
-def create_db():
-    if not validate_entry():
-        info_label.configure(text="Please enter a database name", text_color="red")
-        return
-    
-    try:
-        database_name = entry_database.get()  # Use the entry widget to get the database name
-        # Connect to the database
-        connection = pyodbc.connect(
-            'DRIVER={SQL Server};'
-            'Server=localhost;'  # Replace with the full server name if necessary
-            f'Database=master;'
-            'Trusted_Connection=True;'
-        )
-        connection.autocommit=True
-        connection.execute(f'create database {database_name}')
-        info_label.configure(text="Database created", text_color="green")
-    
-    except pyodbc.Error as ex:
-        print('Connection failed:', ex)
-        info_label.configure(text="Creation Failed", text_color="red")
-    
-    finally:
-        # Close the connection if it was opened
+    def create_db(self):
+        if not self.validate_entry():
+            self.info_label.configure(text="Please enter a database name", text_color="red")
+            return
+        
         try:
-            connection.close()
-            print("Connection closed")
-        except NameError:
-            pass  # Handle the case where the connection wasn't established
+            database_name = self.entry_database.get()  # Use the entry widget to get the database name
+            # Connect to the database
+            connection = pyodbc.connect(
+                'DRIVER={SQL Server};'
+                'Server=localhost;'  # Replace with the full server name if necessary
+                f'Database=master;'
+                'Trusted_Connection=True;'
+            )
+            connection.autocommit = True
+            connection.execute(f'CREATE DATABASE {database_name}')
+            self.info_label.configure(text="Database created", text_color="green")
+        
+        except pyodbc.Error as ex:
+            print('Connection failed:', ex)
+            self.info_label.configure(text="Creation Failed", text_color="red")
+        
+        finally:
+            try:
+                connection.close()
+                print("Connection closed")
+            except NameError:
+                pass
 
-# Create a button for creating a database
-create_button = customtkinter.CTkButton(app, text="Create Database", command=create_db, fg_color="black")
-create_button.pack(pady=10)
-
-def connect_db():
-    if not validate_entry():
-        info_label.configure(text="Please enter a database name", text_color="red")
-        return
-    
-    try:
-        database_name = entry_database.get()  # Use the entry widget to get the database name
-        # Connect to the database
-        connection = pyodbc.connect(
-            'DRIVER={SQL Server};'
-            'Server=localhost;'  # Replace with the full server name if necessary
-            f'Database={database_name};'
-            'Trusted_Connection=True;'
-        )
-        info_label.configure(text="Connection successful", text_color="green")
-    
-    except pyodbc.Error as ex:
-        print('Connection failed:', ex)
-        info_label.configure(text="Connection Failed", text_color="red")
-    
-    finally:
-        # Close the connection if it was opened
+    def connect_db(self):
+        if not self.validate_entry():
+            self.info_label.configure(text="Please enter a database name", text_color="red")
+            return
+        
         try:
-            connection.close()
-            print("Connection closed")
-        except NameError:
-            pass  # Handle the case where the connection wasn't established
-
-# Create a button for connecting to the database
-connect_button = customtkinter.CTkButton(app, text="Connect to Database", command=connect_db, fg_color="green")
-connect_button.pack(pady=10)
-
-# Start the app
-app.mainloop()
+            database_name = self.entry_database.get()  # Use the entry widget to get the database name
+            # Connect to the database
+            connection = pyodbc.connect(
+                'DRIVER={SQL Server};'
+                'Server=localhost;'  # Replace with the full server name if necessary
+                f'Database={database_name};'
+                'Trusted_Connection=True;'
+            )
+            self.info_label.configure(text="Connection successful", text_color="green")
+        
+        except pyodbc.Error as ex:
+            print('Connection failed:', ex)
+            self.info_label.configure(text="Connection Failed", text_color="red")
+        
+        finally:
+            try:
+                connection.close()
+                print("Connection closed")
+            except NameError:
+                pass
