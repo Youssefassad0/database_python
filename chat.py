@@ -91,3 +91,5 @@ class DatabaseManagement:
                 print("Connection closed")
             except NameError:
                 pass
+            
+            

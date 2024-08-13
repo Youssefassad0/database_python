@@ -5,10 +5,23 @@ from chat import DatabaseManagement
 # Configure appearance and theme
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("dark-blue")
-
+# Set the window size
+window_width = 500
+window_height = 300
 # Initialize the app
 app = ctk.CTk()
-app.geometry("500x300")
+
+# Get the screen width and height
+screen_width = app.winfo_screenwidth()
+screen_height = app.winfo_screenheight()
+
+# Calculate the position coordinates to center the window
+position_x = (screen_width // 2) - (window_width // 2)
+position_y = (screen_height // 2) - (window_height // 2)
+
+# Set the geometry of the window with the position
+app.geometry(f"{window_width}x{window_height}+{position_x}+{position_y}")
+
 app.title("EuropCar - SQLServer")
 
 # Ensure the window grid expands with the content
@@ -85,6 +98,8 @@ button_exit.grid(row=1, column=2, padx=10, pady=10)
 
 # Start by showing the main menu frame
 show_frame(main_menu_frame)
+info_label=ctk.CTkLabel(app,text="turtul")
+
 
 # Start the app
 app.mainloop()
